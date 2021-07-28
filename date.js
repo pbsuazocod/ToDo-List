@@ -1,4 +1,9 @@
-exports.getDate = function () {
+module.exports = getDate;
+
+
+function getDate() {
+    const event = new Date();
+
     const options = {
         weekday: "long",
         year: "numeric",
@@ -6,8 +11,6 @@ exports.getDate = function () {
         day: 'numeric'
     };
 
-    const date = event.toLocaleDateString(undefined, options);
-
-    return date;
+    return event.toLocaleDateString(undefined, options);
 
 };

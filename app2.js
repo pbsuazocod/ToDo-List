@@ -2,10 +2,13 @@ const express = require("express");
 const app = express();
 let ejs = require("ejs");
 const path = require('path');
+const pedro = require("./date");
+const getDate = require("./date");
 const date = require(__dirname + "/date.js");
 const newToDos = []
 const newToDos2 = []
 const listName = "Work";
+const dateAndTime = getDate();
 
 app.use(express.urlencoded());
 app.use(express.static(path.join(__dirname + '/public')));
@@ -13,19 +16,6 @@ app.use(express.static(path.join(__dirname + '/public')));
 
 app.set('view engine', 'ejs');
 
-const event = new Date();
-
-const options = {
-    weekday: "long",
-    year: "numeric",
-    month: 'long',
-    day: 'numeric'
-};
-
-const dateAndTime = event.toLocaleDateString(undefined, options);
-// console.log(dateAndTime);
-
-const test = getDate();
 
 app.post('/', (req, res) => {
 
@@ -46,7 +36,7 @@ app.post('/', (req, res) => {
 app.get('/', (req, res) => {
 
     res.render('list', {
-        ToDoList: date,
+        ToDoList: dateAndTime,
         newListItems: newToDos
     });
 });
