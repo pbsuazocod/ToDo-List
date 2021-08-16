@@ -1,17 +1,30 @@
+//-----------Require modules--------------------------------------------------
 const express = require("express");
-const mongoose = require('mongoose');
 const app = express();
+
+//-----------Require mongoose (Data base handler)-----------------------------
+const mongoose = require('mongoose');
+
+//-----------Require ejs (Embedded JavaScript templating)----------------------
 let ejs = require("ejs");
+app.set('view engine', 'ejs');
+
+//------------Require path module (file and directory paths)------------------
 const path = require('path');
+
+//---------global const ---------------------
 const pedro = require("./date");
 const getDate = require("./date");
 const date = require(__dirname + "/date.js");
-// const newToDos = []
 const newToDos2 = []
 const listName = "Work";
 const dateAndTime = getDate();
 
+
+//---------bodyParser substitute (request and sending responses)--------------- 
 app.use(express.urlencoded());
+
+//---------create absolute path--------------- 
 app.use(express.static(path.join(__dirname + '/public')));
 
 
@@ -22,8 +35,7 @@ mongoose.connect('mongodb://localhost:27017/todolistDB', {
 });
 
 
-
-//--------------Create New Schema------------------------
+//--------------Create New Schema-------------------------------------------
 const itemsSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -31,10 +43,11 @@ const itemsSchema = new mongoose.Schema({
     },
 });
 
-//-------------Create New Mongoose Model ---------------
+//-------------Create New Mongoose Model ------------------------------------
 const Item = mongoose.model('Item', itemsSchema);
 
-//----------------------Using MOdel to create Objects------------------------
+
+//----------------------Using Model to create Objects------------------------
 const item1 = new Item({
     name: "Clean the room"
 });
@@ -49,37 +62,24 @@ const item3 = new Item({
 
 const defaultItems = [item1, item2, item3];
 
-app.set('view engine', 'ejs');
 
+//---------Post request (handled incoming data)-----------------------------
 app.post('/', (req, res) => {
 
     const itemName = req.body.toDo;
-    console.log(itemName);
-
     const item = new Item({
         name: itemName
     });
-
     item.save();
     res.redirect("/");
-    // if (req.body.button === listName) {
-    //     newToDos2.push(newToDo);
-    //     res.redirect("/work");
-
-    // } else {
-
-    //     newToDos.push(newToDo);
-    //     res.redirect('/');
-    // }
 });
 
 
 app.post('/delete', (req, res) => {
     console.log(req.body.checkbox);
-
 });
 
-
+//------------get requests -------------------------------------------------
 app.get('/', (req, res) => {
 
     if (defaultItems === 0) {
@@ -88,7 +88,7 @@ app.get('/', (req, res) => {
             if (err) {
                 console.log(err);
             } else {
-                console.log("succesfully add default items to data base");
+                console.log("successfully add default items to data base");
             };
         });
         res.redirect('/');
