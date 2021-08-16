@@ -18,6 +18,9 @@ const path = require('path');
 //---------global const ------------------------------------------------------
 const pedro = require("./date");
 const getDate = require("./date");
+const {
+    PRIORITY_ABOVE_NORMAL
+} = require("constants");
 const date = require(__dirname + "/date.js");
 const newToDos2 = []
 const listName = "Work";
@@ -194,6 +197,12 @@ app.get("/about", (req, res) => {
     res.render("about");
 });
 
-app.listen(3000, function (res, req) {
-    console.log("server started on port 3000");
+let port = process.env.PORT;
+if (port == null || port == "") {
+    port = 3000;
+}
+app.listen(port);
+
+app.listen(PRIORITY_ABOVE_NORMAL, function (res, req) {
+    console.log("server has started successfully");
 });
