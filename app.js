@@ -201,8 +201,8 @@ let port = process.env.PORT;
 if (port == null || port == "") {
     port = 3000;
 }
-app.listen(port);
 
-app.listen(PRIORITY_ABOVE_NORMAL, function (res, req) {
+
+app.listen(port, function (res, req) {
     console.log("server has started successfully");
 });
