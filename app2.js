@@ -1,6 +1,9 @@
-//-----------Require modules--------------------------------------------------
+//-----------Require Express--------------------------------------------------
 const express = require("express");
 const app = express();
+//-----------Require Lodash--------------------------------------------------
+//handle of lower and upper case text
+const _ = require('lodash');
 
 //-----------Require mongoose (Data base handler)-----------------------------
 const mongoose = require('mongoose');
@@ -12,7 +15,7 @@ app.set('view engine', 'ejs');
 //------------Require path module (file and directory paths)------------------
 const path = require('path');
 
-//---------global const ---------------------
+//---------global const ------------------------------------------------------
 const pedro = require("./date");
 const getDate = require("./date");
 const date = require(__dirname + "/date.js");
@@ -43,9 +46,14 @@ const itemsSchema = new mongoose.Schema({
     },
 });
 
+const listSchema = {
+    name: String,
+    items: [itemsSchema]
+};
 //-------------Create New Mongoose Model ------------------------------------
 const Item = mongoose.model('Item', itemsSchema);
 
+const List = mongoose.model('List', listSchema);
 
 //----------------------Using Model to create Objects------------------------
 const item1 = new Item({
@@ -67,16 +75,60 @@ const defaultItems = [item1, item2, item3];
 app.post('/', (req, res) => {
 
     const itemName = req.body.toDo;
+    const listName = req.body.list;
     const item = new Item({
         name: itemName
     });
-    item.save();
-    res.redirect("/");
+
+    if (listName === "Today") {
+        item.save();
+        res.redirect("/");
+    } else {
+        List.findOne({
+            name: listName
+        }, (err, foundList) => {
+            if (err) {
+                console.log(err);
+            } else {
+                foundList.items.push(item);
+                foundList.save();
+                res.redirect("/" + listName);
+            }
+        });
+    }
 });
 
-
+//Delete data from the data base
 app.post('/delete', (req, res) => {
-    console.log(req.body.checkbox);
+    const checkedItemId = req.body.checkbox;
+    const listName = req.body.listName;
+
+    if (listName === "Today") {
+        Item.findByIdAndRemove({
+            _id: checkedItemId
+        }, (err) => {
+            if (!err) {
+                console.log('Successfully deleted checked item');
+            };
+        });
+        res.redirect('/');
+    } else {
+        List.findOneAndUpdate({
+            name: listName
+        }, {
+            $pull: {
+                items: {
+                    _id: checkedItemId
+                }
+            }
+        }, (err, foundList) => {
+            if (!err) {
+                res.redirect('/' + listName);
+            }
+        });
+    }
+
+
 });
 
 //------------get requests -------------------------------------------------
@@ -100,7 +152,8 @@ app.get('/', (req, res) => {
             } else {
 
                 res.render('list', {
-                    ToDoList: dateAndTime,
+                    ToDoList: "Today",
+                    // ToDoList: dateAndTime,
                     newListItems: foundItems
                 });
             };
@@ -109,13 +162,33 @@ app.get('/', (req, res) => {
 });
 
 
-app.get("/work", (req, res) => {
+app.get('/:customListName', (req, res) => {
 
-    res.render('list', {
-        ToDoList: listName,
-        newListItems: newToDos2,
+    const customListName = _.capitalize(req.params.customListName);
+
+    List.findOne({
+        name: customListName
+    }, (err, foundList) => {
+        if (!err) {
+            if (!foundList) {
+                //create a new list
+                const list = new List({
+                    name: customListName,
+                    items: defaultItems
+                });
+                list.save();
+                res.redirect("/" + customListName);
+            } else {
+                //Show an existing list
+                res.render('list', {
+                    ToDoList: foundList.name,
+                    newListItems: foundList.items
+                });
+            }
+        }
     });
-})
+
+});
 
 app.get("/about", (req, res) => {
     res.render("about");
