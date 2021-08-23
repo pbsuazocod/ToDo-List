@@ -13,6 +13,15 @@
         <% listOfProjects.forEach(function (projects){ %>
         <p><%= projects %></p>
         <% }); %>
+
+
+
+        <div class='newProject'>
+            <form action="/" method="POST">
+                <input type="text" placeholder="New project" name='newProject'>
+                <button class="btn" type='submit'>+</button>
+            </form>
+        </div>
     </div>
 
     <div class="box2">

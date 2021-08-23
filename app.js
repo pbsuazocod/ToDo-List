@@ -16,18 +16,8 @@ app.set('view engine', 'ejs');
 const path = require('path');
 
 //---------global const ------------------------------------------------------
-const pedro = require("./date");
 const getDate = require("./date");
-const {
-    PRIORITY_ABOVE_NORMAL
-} = require("constants");
-const {
-    constant
-} = require("lodash");
 const date = require(__dirname + "/date.js");
-
-// const newToDos2 = []
-
 const dateAndTime = getDate();
 
 
@@ -37,15 +27,13 @@ app.use(express.urlencoded());
 //---------create absolute path--------------- 
 app.use(express.static(path.join(__dirname + '/public')));
 
-
 //----------add your own db at fruitsDB-----------------
 mongoose.connect('mongodb+srv://admin-pedro:michelle8266@cluster0.pgogv.mongodb.net/todolistDB', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
 
-
-//--------------Create New Schema-------------------------------------------
+//--------------Create New Schema-------------------------------------------------
 // ItemSchema
 const itemsSchema = new mongoose.Schema({
     name: {
@@ -60,13 +48,10 @@ const listSchema = {
     items: [itemsSchema]
 };
 
-//-------------Create New Mongoose Model ------------------------------------
+//-------------Create New Mongoose Model -----------------------------------------
 const Item = mongoose.model('Item', itemsSchema);
 
 const List = mongoose.model('List', listSchema);
-
-
-
 
 //---------Post request (handled incoming data)-----------------------------
 app.post('/', (req, res) => {
@@ -125,8 +110,6 @@ app.post('/delete', (req, res) => {
             }
         });
     }
-
-
 });
 
 //------------get requests -------------------------------------------------
@@ -175,11 +158,9 @@ app.get('/', async (req, res) => {
             listOfProjects: listOfProjects
         });
     }
-
 });
 
-
-app.get('/:customListName', async (req, res) => {
+app.get('/:customListName', (req, res) => {
 
     const customListName = _.capitalize(req.params.customListName);
 
@@ -200,7 +181,7 @@ app.get('/:customListName', async (req, res) => {
 
     List.findOne({
         name: customListName
-    }, (err, foundList) => {
+    }, async (err, foundList) => {
         if (!err) {
             if (!foundList) {
                 //create a new list
@@ -233,7 +214,6 @@ app.get('/:customListName', async (req, res) => {
 
 });
 
-
 app.get("/about", (req, res) => {
     res.render("about");
 });
@@ -242,7 +222,6 @@ let port = process.env.PORT;
 if (port == null || port == "") {
     port = 3000;
 }
-
 
 app.listen(port, function (res, req) {
     console.log("server has started successfully");
