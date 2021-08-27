@@ -1,6 +1,3 @@
-module.exports = getDate;
-
-
 function getDate() {
     const event = new Date();
 
@@ -11,6 +8,7 @@ function getDate() {
         day: 'numeric'
     };
 
-    return event.toLocaleDateString(undefined, options);
-
+    return event.toLocaleDateString("en-US", options);
 };
+
+export default getDate;
