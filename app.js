@@ -1,4 +1,5 @@
 //-----------Imports--------------------------------------------------
+// https://stormy-savannah-52409.herokuapp.com/
 import express from "express";
 import mongoose from 'mongoose';
 import _ from 'lodash'; //handle text
@@ -95,14 +96,10 @@ app.post("/delete", async (req, res) => {
 
 app.get('/', async (req, res) => {
     const lists = await List.find({});
-    // console.log(lists);
 
     const listOfProjects = lists.map((list) => {
         return list.name;
     });
-
-    // console.log(listOfProjects);
-
     const items = await Item.find({});
 
     res.render('list', {
