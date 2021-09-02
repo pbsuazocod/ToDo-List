@@ -1,9 +1,10 @@
 //---------Create and connect to data base--------------------------------------------- 
 import mongoose from "mongoose";
+import url from '../public/env.js'
 
 function connectDB() {
     mongoose.connect(
-        "mongodb+srv://admin-pedro:michelle8266@cluster0.pgogv.mongodb.net/todolistDB", {
+        url, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         }
@@ -11,3 +12,5 @@ function connectDB() {
 }
 
 export default connectDB;
+
+// "mongodb+srv://admin-pedro:michelle8266@cluster0.pgogv.mongodb.net/todolistDB"

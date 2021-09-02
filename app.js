@@ -1,5 +1,4 @@
 //-----------Imports--------------------------------------------------
-// https://stormy-savannah-52409.herokuapp.com/
 import express from "express";
 import mongoose from 'mongoose';
 import _ from 'lodash'; //handle text
@@ -35,9 +34,8 @@ app.post('/', async (req, res) => {
 
     const itemName = req.body.toDo;
     const listName = req.body.list;
-    const newProject = _.capitalize(req.body.newProject);
-    console.log(newProject);
     console.log(listName);
+    const newProject = _.capitalize(req.body.newProject);
 
     if (listName === undefined) {
 
@@ -52,7 +50,7 @@ app.post('/', async (req, res) => {
             name: itemName
         });
 
-        if (listName === "To Do List") {
+        if (listName === "Text") {
             item.save();
             res.redirect("/");
         } else {
@@ -69,11 +67,9 @@ app.post('/', async (req, res) => {
 
 app.post("/delete", async (req, res) => {
     const checkedItemId = req.body.checkbox;
-    console.log(checkedItemId);
     const listName = req.body.listName;
-    console.log(listName);
 
-    if (listName === "To Do List") {
+    if (listName === "Text") {
         await Item.findByIdAndDelete({
             _id: checkedItemId
         });
@@ -95,15 +91,17 @@ app.post("/delete", async (req, res) => {
 
 
 app.get('/', async (req, res) => {
+
     const lists = await List.find({});
 
     const listOfProjects = lists.map((list) => {
         return list.name;
     });
+
     const items = await Item.find({});
 
     res.render('list', {
-        ToDoList: "To Do List",
+        ToDoList: "Text",
         dateAndTime,
         newListItems: items,
         listOfProjects
